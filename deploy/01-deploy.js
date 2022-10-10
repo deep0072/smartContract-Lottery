@@ -6,7 +6,7 @@ const {
 
 const { verify } = require("../utils/verify");
 
-const VRF_SUB_FUND_AMOUNT = ethers.utils.parseEther("1");
+const VRF_SUB_FUND_AMOUNT = ethers.utils.parseEther("2");
 
 module.exports = async function ({ getNamedAccounts, deployments }) {
   const { deploy, log } = deployments;
@@ -14,6 +14,7 @@ module.exports = async function ({ getNamedAccounts, deployments }) {
   const chainId = network.config.chainId;
   let vrfCoordinatorV2address, subscriptionId;
   if (developmentChains.includes(network.name)) {
+    console.log("deploying");
     // check network is on local node or not as it is defined in helper config
     const vrfCoordinatorV2Mock = await ethers.getContract(
       "VRFCoordinatorV2Mock"
@@ -22,13 +23,16 @@ module.exports = async function ({ getNamedAccounts, deployments }) {
     vrfCoordinatorV2address = vrfCoordinatorV2Mock.address;
     const transactionResponse = await vrfCoordinatorV2Mock.createSubscription(); // calling inbuit subscription id function createSubscription
     const transReciept = await transactionResponse.wait(1);
-    subscriptionId = transReciept.events[0].args.subid; // get the emitted id from solidity events
+
+    subscriptionId = transReciept.events[0].args.subId; // get the emitted id from solidity events
     /*
      fund the subscription 
      we need link token  on real network
     
     
     */
+    console.log(chainId, "chainId");
+    console.log(networkConfig[chainId], "chainid");
 
     await vrfCoordinatorV2Mock.fundSubscription(
       subscriptionId,
@@ -40,6 +44,7 @@ module.exports = async function ({ getNamedAccounts, deployments }) {
   }
 
   const entranceFee = networkConfig[chainId]["entranceFee"];
+  console.log(entranceFee, "entrancefee");
   const gasLane = networkConfig[chainId]["gasLane"];
   const callbackGasLimit = networkConfig[chainId]["callbackGasLimit"];
   const interval = networkConfig[chainId]["interval"];
@@ -55,7 +60,7 @@ module.exports = async function ({ getNamedAccounts, deployments }) {
 
   const raffle = await deploy("Raffle", {
     from: deployer,
-    args: [], // these are the values that is defined in constructor in solidity file that we are going to deploy
+    args: args, // these are the values that is defined in constructor in solidity file that we are going to deploy
     log: true,
     waitConfirmations: network.config.blockConfirmations || 1,
   });

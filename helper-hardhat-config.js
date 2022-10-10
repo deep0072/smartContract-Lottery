@@ -12,7 +12,7 @@ networkConfig = {
     interval: "30",
   },
 
-  31337: {
+  31377: {
     name: "hardhat",
     entranceFee: ethers.utils.parseEther("0.01"),
     gasLane:
