@@ -13,7 +13,7 @@ const COINMARKETCAP = process.env.COINMARKETCAP;
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
-  defaultNetowrk: "hardhat",
+  defaultNetwork: "hardhat",
   networks: {
     hardhat: {
       chainId: 31377,

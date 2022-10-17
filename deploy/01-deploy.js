@@ -10,9 +10,10 @@ const VRF_SUB_FUND_AMOUNT = ethers.utils.parseEther("2");
 
 module.exports = async function ({ getNamedAccounts, deployments }) {
   const { deploy, log } = deployments;
-  const { deployer } = await getNamedAccounts();
+  const { deployer } = await getNamedAccounts(); // get default deployer which is harhdat rn.
   const chainId = network.config.chainId;
   let vrfCoordinatorV2address, subscriptionId;
+  console.log(!developmentChains.includes(network.name), "including...");
   if (developmentChains.includes(network.name)) {
     console.log("deploying");
     // check network is on local node or not as it is defined in helper config
@@ -21,7 +22,7 @@ module.exports = async function ({ getNamedAccounts, deployments }) {
     ); // get the mock adress that is defined in contact/test/VRFCoordinatorV2MOCK.sol
 
     vrfCoordinatorV2address = vrfCoordinatorV2Mock.address;
-    const transactionResponse = await vrfCoordinatorV2Mock.createSubscription(); // calling inbuit subscription id function createSubscription
+    const transactionResponse = await vrfCoordinatorV2Mock.createSubscription(); // calling inbuilt subscription id function createSubscription
     const transReciept = await transactionResponse.wait(1);
 
     subscriptionId = transReciept.events[0].args.subId; // get the emitted id from solidity events
