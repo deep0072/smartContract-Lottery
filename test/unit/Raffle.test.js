@@ -1,10 +1,14 @@
-const { assert } = require("chai");
+const { assert, expect } = require("chai");
 const { network, getNamedAccounts, deployments, ethers } = require("hardhat");
-const { developmentChains } = require("../../helper-hardhat-config");
+const {
+  developmentChains,
+  networkConfig,
+} = require("../../helper-hardhat-config");
 
 !developmentChains.includes(network.name)
   ? describe.skip
   : describe("Raffle unit test", async function () {
+      const chainId = network.config.chainId;
       let raffle, vrfCoordinateMock;
 
       beforeEach(async function () {
@@ -20,11 +24,28 @@ const { developmentChains } = require("../../helper-hardhat-config");
       describe("Constructor", async function () {
         it("intialize the raffle correctly", async function () {
           const raffleState = await raffle.getRaffleState(); // it will return in to 0 and 1 which is true false by definition but these are uint 256
+
           // need to convert into the string
 
           assert.equal(raffleState.toString(), "0"); // testing raffle state is equal to 0 or not
           const raffleInterval = await raffle.getInterval();
-          assert.equal(raffleState.toString(), "0");
+          console.log(
+            raffleInterval.toString(),
+            networkConfig[chainId]["interval"]
+          );
+
+          assert.equal(
+            raffleInterval.toString(),
+            networkConfig[chainId]["interval"]
+          );
+        });
+      });
+
+      describe("enterRaffle", async function () {
+        it("chek sufficient amount", async function () {
+          expect(raffle.enterRaffle()).to.be.revertedWith(
+            "Raffle_NotEnoughEthEntered"
+          );
         });
       });
     });
