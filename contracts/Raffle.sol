@@ -33,6 +33,8 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
      type declarations
 
      */
+
+    // in enums
     enum RaffleState {
         Open,
         Calculating
@@ -127,11 +129,11 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
 
         // check balance
         bool hasBalance = (address(this).balance > 0);
-        upKeepNeeded = (isOpen && timePassed && hasPlayer && hasBalance);
+        upKeepNeeded = (isOpen && timePassed && hasPlayer && hasBalance); // this boolean value will cause the lottery to be opened and closed. if true it means lottery closed
     }
 
     /*
-      upKeep check all conditon to pick a random winner,
+      upKeep check all conditon to pick a random winner withing given time interval. if all conditon not met. then raffle entry will be closed,
       then PerfromUpkeep will check if if upKeep function gives true value then it will run its function get the winner 
     
     */
@@ -141,6 +143,7 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
     ) external override {
         (bool upKeepNeeded, ) = checkUpkeep("");
         if (!upKeepNeeded) {
+            // checking Raffle state in closed or opened
             revert Raffle_UpkeepNotNeeded(
                 address(this).balance,
                 s_players.length,
