@@ -134,4 +134,40 @@ const {
           assert(upKeepNeeded);
         });
       });
+
+      describe("performUpKeep", function () {
+        it("it can only run if checkUpekeep true", async function () {
+          await raffle.enterRaffle({ value: raffleEntranceFee });
+          await network.provider.send("evm_increaseTime", [
+            raffleInterval.toNumber() + 1,
+          ]);
+
+          await network.provider.send("evm_mine", []);
+          const tx = await raffle.performUpkeep([]);
+          assert(tx);
+        });
+
+        it("revert when checkUpkeep false", async function () {
+          await expect(raffle.performUpkeep([])).to.be.revertedWith(
+            "Raffle_UpkeepNotNeeded"
+          );
+        });
+
+        it("updates raffle state, events and calls the vrf cordinator", async function () {
+          await raffle.enterRaffle({ value: raffleEntranceFee });
+          await network.provider.send("evm_increaseTime", [
+            raffleInterval.toNumber() + 1,
+          ]);
+          await network.provider.send("evm_mine", []);
+
+          const transactionResponse = await raffle.performUpkeep([]);
+          const txReceipt = await transactionResponse.wait(1);
+          const requestId = txReceipt.events[1].args.requestId;
+          //now check the raffle state
+
+          const raffleState = await raffle.getRaffleState();
+          assert(requestId.toNumber() > 0);
+          assert(raffleState.toString() == 1);
+        });
+      });
     });
