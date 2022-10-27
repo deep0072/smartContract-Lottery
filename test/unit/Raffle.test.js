@@ -7,7 +7,7 @@ const {
 
 !developmentChains.includes(network.name)
   ? describe.skip
-  : describe("Raffle unit test", async function () {
+  : describe("Raffle unit test", function () {
       const chainId = network.config.chainId;
       let raffle,
         vrfCoordinateMock,
@@ -28,7 +28,7 @@ const {
         raffleInterval = await raffle.getInterval();
       });
 
-      describe("Constructor", async function () {
+      describe("Constructor", function () {
         it("intialize the raffle correctly", async function () {
           const raffleState = await raffle.getRaffleState(); // it will return in to 0 and 1 which is true false by definition but these are uint 256
 
@@ -43,7 +43,7 @@ const {
         });
       });
 
-      describe("enterRaffle", async function () {
+      describe("enterRaffle", function () {
         it("check sufficient amount", async function () {
           expect(raffle.enterRaffle()).to.be.revertedWith(
             "Raffle_NotEnoughEthEntered"
@@ -78,6 +78,60 @@ const {
           await expect(
             raffle.enterRaffle({ value: raffleEntranceFee })
           ).to.be.revertedWith("Raffle_NotOpen");
+        });
+      });
+
+      describe("checkUpkeep", function () {
+        it("return false if people have not sent any eth", async function () {
+          await network.provider.send("evm_increaseTime", [
+            raffleInterval.toNumber() + 1,
+          ]);
+          await network.provider.send("evm_mine", []);
+          const { upKeepNeeded } = await raffle.callStatic.checkUpkeep([]); // here call static just use to call upkepp without doing transactions
+          console.log(upKeepNeeded, "upkeepNeeded");
+
+          assert(!upKeepNeeded);
+        });
+
+        it("return false if raffle is not open", async function () {
+          await raffle.enterRaffle({ value: raffleEntranceFee });
+          await network.provider.send("evm_increaseTime", [
+            raffleInterval.toNumber() + 1,
+          ]);
+          await network.provider.send("evm_mine", []);
+
+          await raffle.performUpkeep([]);
+          // now check raffle state
+
+          const raffleState = await raffle.getRaffleState();
+          assert.equal(raffleState.toString(), "1");
+
+          const { upKeepNeeded } = await raffle.callStatic.checkUpkeep([]);
+          console.log(upKeepNeeded, "upKeepNeeded");
+          assert.equal(upKeepNeeded, false);
+        });
+
+        it("return false if enough time has not passed", async function () {
+          await raffle.enterRaffle({ value: raffleEntranceFee });
+          await network.provider.send("evm_increaseTime", [
+            raffleInterval.toNumber() - 1,
+          ]);
+
+          await network.provider.send("evm_mine", []);
+
+          const { upKeepNeeded } = await raffle.callStatic.checkUpkeep([]);
+          assert.equal(upKeepNeeded, false);
+        });
+
+        it("returns true if enough time has passed, has players, eth, is open", async function () {
+          await raffle.enterRaffle({ value: raffleEntranceFee });
+          await network.provider.send("evm_increaseTime", [
+            raffleInterval.toNumber() + 1,
+          ]);
+
+          await network.provider.send("evm_mine", []);
+          const { upKeepNeeded } = await raffle.callStatic.checkUpkeep([]);
+          assert(upKeepNeeded);
         });
       });
     });
