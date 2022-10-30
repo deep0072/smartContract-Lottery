@@ -242,12 +242,12 @@ const {
                     )
                     .toString()
                 );
-                // assert.equal(
-                //   winnerEndingBalance.toString(),
-                //   winnerStatringBalance
-                //     .add(raffleEntranceFee.mul(additionalEntrants))
-                //     .toString()
-                // );
+                assert.equal(
+                  winnerEndingBalance.toString(),
+                  winnerStatringBalance
+                    .add(raffleEntranceFee.mul(additionalEntrants))
+                    .toString()
+                );
                 assert(endingTimeStamp > lastTimeStamp);
               } catch (e) {
                 reject(e);

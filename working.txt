@@ -1,0 +1,14 @@
+chainlink vrf ==> these are used to get the random words
+chainlink keeper(chainlink automation) ==> use to trigger the function after some duration
+
+
+
+process to run  our staging test
+1. get sub id for vrf contract
+   a). this sub id will help us to get the random words. 
+    for our lottery contract
+   b). our contract will be consumer for that sub id
+2.deploy our contract with the sub id
+3.register contract with chainlink VRF and its sub id
+4. register the contract with chainlink keeper
+5.run staging test

@@ -26,7 +26,16 @@ module.exports = {
       accounts: [GOERLI_PRIVATE_KEY],
     },
   },
+
+  etherscan: {
+    // yarn hardhat verify --network <NETWORK> <CONTRACT_ADDRESS> <CONSTRUCTOR_PARAMETERS>
+    apiKey: {
+      goerli: Etherscan_API_KEY,
+    },
+  },
+
   solidity: "0.8.9",
+
   namedAccounts: {
     deployer: {
       default: 0,
@@ -37,6 +46,6 @@ module.exports = {
   },
 
   mocha: {
-    timeout: 200000, // 200 seconds
+    timeout: 1600000, // 1600 seconds
   },
 };
