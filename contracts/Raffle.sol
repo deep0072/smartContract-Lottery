@@ -116,7 +116,7 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
     */
     function checkUpkeep(
         bytes memory /* checkData */
-    ) public override returns (bool upKeepNeeded, bytes memory) {
+    ) public view override returns (bool upKeepNeeded, bytes memory) {
         // now check lottery in open state first
         bool isOpen = (RaffleState.Open == s_raffleState);
 
@@ -130,6 +130,7 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
         // check balance
         bool hasBalance = (address(this).balance > 0);
         upKeepNeeded = (isOpen && timePassed && hasPlayer && hasBalance); // this boolean value will cause the lottery to be opened and closed. if true it means lottery closed
+        return (upKeepNeeded, "0x0"); // can we comment this out?
     }
 
     /*
@@ -141,7 +142,7 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
     function performUpkeep(
         bytes calldata /* performData */
     ) external override {
-        (bool upKeepNeeded, ) = checkUpkeep("");
+        (bool upKeepNeeded, ) = checkUpkeep("0x");
         if (!upKeepNeeded) {
             // checking Raffle state in closed or opened
             revert Raffle_UpkeepNotNeeded(
@@ -178,7 +179,7 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
         // 202%  10 = 2 which is index number in s_player array will be the winner of lottery
 
         uint256 indexOfWinner = randomWords[0] % s_players.length;
-        address recentWinner = s_players[indexOfWinner];
+        address payable recentWinner = s_players[indexOfWinner];
         // once we get winner then empty the s_playre to zero
         s_players = new address payable[](0);
         s_recentWinner = recentWinner;

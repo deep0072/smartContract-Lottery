@@ -8,7 +8,7 @@ networkConfig = {
     gasLane:
       "0x79d3d8832d904592c0bf9818b621522c988bb8b0c05cdc3b15aea1b6e8db0c15",
     subscriptionId: "5686",
-    callbackGasLimit: "500000", // gas limit
+    callbackGasLimit: "2500000", // gas limit
     interval: "30",
   },
 
@@ -17,7 +17,7 @@ networkConfig = {
     entranceFee: ethers.utils.parseEther("0.01"),
     gasLane:
       "0x79d3d8832d904592c0bf9818b621522c988bb8b0c05cdc3b15aea1b6e8db0c15",
-    callbackGasLimit: "500000",
+    callbackGasLimit: "2500000",
     interval: "30",
   },
 };

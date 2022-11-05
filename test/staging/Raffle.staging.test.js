@@ -35,6 +35,7 @@ developmentChains.includes(network.name)
 
               try {
                 const recentWinner = await raffle.getRecentWinner();
+
                 const raffleState = await raffle.getRaffleState();
                 const winnerEndingBalance = await accounts[0].getBalance();
                 const endingTimeStamp = await raffle.getLatestTimeStamp();
@@ -55,12 +56,14 @@ developmentChains.includes(network.name)
                 reject(error);
               }
             });
-            const winnerStartingBalance = await accounts[0].getBalance();
-            console.log(winnerStartingBalance);
+
             const tx = await raffle.enterRaffle({ value: raffleEntranceFee });
-            console.log(tx);
+
             await tx.wait(1);
             console.log("time to wait now");
+            const winnerStartingBalance = await accounts[0].getBalance();
+
+            console.log(winnerStartingBalance);
           });
         });
       });

@@ -249,10 +249,10 @@ const {
                     .toString()
                 );
                 assert(endingTimeStamp > lastTimeStamp);
+                resolve();
               } catch (e) {
                 reject(e);
               }
-              resolve();
             });
 
             const tx = await raffle.performUpkeep([]);
